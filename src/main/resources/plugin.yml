@@ -1,0 +1,4 @@
+name: UserCore
+version: 1.0
+main: cz.daalbu.usercore.UserCore
+api-version: 1.19
