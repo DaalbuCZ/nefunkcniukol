@@ -1,4 +1,4 @@
-package cz.daalbu.usercore;
+package cz.daalbu.usercore.user;
 
 public class User {
     private String name;
