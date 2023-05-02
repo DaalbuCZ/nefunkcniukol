@@ -1,43 +1,57 @@
 package cz.daalbu.usercore.user;
 
 import cz.daalbu.usercore.UserCore;
-import cz.daalbu.usercore.user.command.PmToggleCommand;
-import cz.daalbu.usercore.user.listener.JoinListener;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 
 public class UserManager {
     private UserCore plugin;
-    private HashMap<String, User> userHashMap = new HashMap<>();
+    private HashMap<String, User> userHashMap;
 
     public UserManager(){
-        this.plugin.getServer().getPluginManager().registerEvents(new JoinListener(), plugin);
-        this.plugin.getCommand("pmToggle").setExecutor(new PmToggleCommand());
-        this.saveUser();
-        this.loadUserOnJoin();
-
+        this.plugin = UserCore.getInstance();
+        load();
     }
 
+    public void load() {
+        userHashMap = new HashMap<>();
+    }
 
-    public void saveUser(){
-        String userName = new JoinListener().toString().toLowerCase();
-        if (!userHashMap.containsKey(userName.toLowerCase())){
-            User user = new User(userName, true);
-            userHashMap.put(userName, user);
+    public User createUser(String name, boolean pmToggle) {
+        User user = new User(name, pmToggle);
+        userHashMap.put(user.getName().toLowerCase(), user);
+        return user;
+    }
+
+    public User loadUser(String name){
+        if (userHashMap.containsKey(name.toLowerCase())) {
+            return getUserByName(name);
         }
+        return createUser(name, true);
     }
-    public User loadUserOnJoin(){
-        String userName = new JoinListener().toString().toLowerCase();
-        if (userHashMap.containsKey(userName.toLowerCase())) {
-            User user = userHashMap.get(userName.toLowerCase());
-            return user;
+
+    public User saveUser(User user) {
+        String name = user.getName().toLowerCase();
+        if (userHashMap.containsKey(name)) {
+            userHashMap.replace(name, user);
+            return userHashMap.get(name);
         }
-        return null;
+        return createUser(name, true);
     }
-    public User loadUser(String userName){
-        if (userHashMap.containsKey(userName.toLowerCase())) {
-            User user = userHashMap.get(userName.toLowerCase());
-            return user;
+
+    public User getUserByName(String name) {
+        return userHashMap.get(name.toLowerCase());
     }
-        return null;
+
+    public User getUserByPlayer(Player player) {
+        return userHashMap.get(player.getName().toLowerCase());
+    }
+
+    public HashMap<String, User> getAllUsers() {
+        return userHashMap;
+    }
+
+
+
 }
